@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>html登录模板</title>
+    <style>
+        /* 让页面所有元素的padding和margin都设置为0 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 设置背景图，字体设置为微软雅黑 */
+        body {
+            font-family: "微软雅黑", sans-serif;
+        }
+
+        /* 引用图片高度设置为28px，就是页面最上方像屋檐一样的黑色图 */
+        .headtop {
+            height: 28px;
+        }
+
+        /* 整个登录框的css，并使用绝对定位居中 */
+        .login {
+            position: absolute;
+            top: 20%;
+            left: 30%;
+            margin: -150px 0 0 -150px;
+            width: 300px;
+            height: 300px;
+        }
+
+        /* 前面分析过的h1标签的css，text-shadow设置阴影使文字更好看，letter-spacing设置字符间距 */
+        .login h1 {
+            color: #555555;
+            text-shadow: 0px 10px 8px #CDC673;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* 两个输入框的css，border属性设置边框线粗细以及颜色，border-radius设置边框的圆角角度 */
+        input {
+            padding: 10px;
+            width: 100%;
+            color: white;
+            margin-bottom: 10px;
+            background-color: #555555;
+            border: 1px solid black;
+            border-radius: 4px;
+            letter-spacing: 2px;
+        }
+
+        select {
+            padding: 10px;
+            width: 49%;
+            color: white;
+            margin-bottom: 10px;
+            background-color: #555555;
+            border: 1px solid black;
+            border-radius: 4px;
+            letter-spacing: 2px;
+        }
+
+        /* 登录按钮的css，cursor:pointer当鼠标移到按钮上面时变成小手形状 */
+        form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #CDC673;
+            border: 1px solid black;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button
+        {
+            width: 100%;
+            padding: 10px;
+            background-color: #CDC673;
+            border: 1px solid black;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table
+        {
+            width: 100%;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid black;
+            border-radius: 4px;
+        }
+    </style>
+    <script src="jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+        var price;
+        $(document).ready(function () {
+            $.ajax({
+                url:"/queryMenu",
+                type:"post",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    for (var i=0;i<menu.length;i++){
+                        $("#chooseFood1").append("<option>" + menu[i].food + "</option>");
+                        $("#chooseFood2").append("<option>" + menu[i].food + "</option>");
+                    }
+                }
+            })
+        });
+        function queryMenu() {
+            $.ajax({
+                url:"/queryMenu",
+                type:"post",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    $("#menu").empty();
+                    for (var i=0;i<menu.length;i++){
+                        $("#menu").append(
+                            "<tr><td>"+menu[i].id+"</td>" +
+                            "<td>"+menu[i].food+"</td>" +
+                            "<td>"+menu[i].price+"</td></tr>")
+                    }
+                }
+            })
+        }
+        function bookMenu() {
+            var bookMenu={
+                menu:$("#chooseFood1").val()+","+$("#chooseFood2").val(),
+                price:price,
+                bookdate:$("#bookDate").val()
+            };
+            $.ajax({
+                url:"/bookMenu",
+                type:"post",
+                data:JSON.stringify(bookMenu),
+                contentType:"application/json;charset=utf-8",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    alert(menu)
+                }
+            })
+        }
+        function submitSuggestion() {
+            var menu={
+                suggestion:$("#suggestion").val()
+            };
+            $.ajax({
+                url:"/submitSuggestion",
+                type:"post",
+                data:JSON.stringify(menu),
+                contentType:"application/json;charset=utf-8",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    alert(menu)
+                }
+            })
+        }
+        function sumPrice() {
+            $.ajax({
+                url:"/queryMenu",
+                type:"post",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    var num=0;
+                    for(var i=0;i<menu.length;i++){
+                        if(menu[i].food===$("#chooseFood1").val()||menu[i].food===$("#chooseFood2").val()){
+                            num+=menu[i].price;
+                            if($("#chooseFood1").val()===$("#chooseFood2").val()){
+                                num+=num;
+                            }
+                        }
+                    }
+                    price=num;
+                    $("#price").html(num);
+                }
+            })
+        }
+        function queryBookMenuById() {
+            $.ajax({
+                url:"/queryBookMenuById",
+                type:"post",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    $("#spendRecord").empty();
+                    $("#spendRecord").append(
+                    "<tr><th>菜名</th>"+
+                    "<th>价格</th>"+
+                    "<th>指定时间</th>"+
+                    "<th>消费时间</th></tr>"
+                    );
+                    for (var i=0;i<menu.length;i++){
+                        $("#spendRecord").append(
+                            "<tr><td>"+menu[i].menu+"</td>" +
+                            "<td>"+menu[i].price+"</td>" +
+                            "<td>"+new Date(menu[i].bookdate).toDateString()+"</td>" +
+                            "<td>"+new Date(menu[i].spenddate).toDateString()+"<td></tr>")
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div class="headtop"></div>
+<div class="login">
+    <h1>管理界面</h1>
+    <input type="text" id="suggestion" placeholder="建议">
+    <button onclick="submitSuggestion()">提交建议</button>
+    <select id="chooseFood1" onblur="sumPrice()">
+        <option value="">选择菜名</option>
+    </select>
+    <select id="chooseFood2" onblur="sumPrice()">
+        <option value="">选择菜名</option>
+    </select>
+    价格:<label id="price"></label>
+    <input type="date" id="bookDate">
+    <button onclick="bookMenu()">预订</button>
+    <button type="button" onclick="queryMenu()">显示所有菜名</button>
+    <button type="button" onclick="queryBookMenuById()">消费记录</button>
+</div>
+<div class="login" style="left: 50%">
+    <h1>菜谱</h1>
+    <div><table border="1">
+        <tr>
+            <th>编号</th>
+            <th>菜名</th>
+            <th>价格</th>
+        </tr>
+    </table>
+        <table id="menu" border="1">
+        </table>
+    </div>
+</div>
+<div class="login" style="left: 70%">
+    <h1>订餐信息</h1>
+    <div><table id="spendRecord" border="1">
+        <tr>
+            <th>—菜名—</th>
+            <th>价格</th>
+            <th>指定时间</th>
+            <th>消费时间</th>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

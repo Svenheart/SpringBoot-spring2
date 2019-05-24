@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>html登录模板</title>
+    <style>
+        /* 让页面所有元素的padding和margin都设置为0 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 设置背景图，字体设置为微软雅黑 */
+        body {
+            font-family: "微软雅黑", sans-serif;
+        }
+
+        /* 引用图片高度设置为28px，就是页面最上方像屋檐一样的黑色图 */
+        .headtop {
+            height: 28px;
+        }
+
+        /* 整个登录框的css，并使用绝对定位居中 */
+        .login {
+            position: absolute;
+            top: 20%;
+            left: 30%;
+            margin: -150px 0 0 -150px;
+            width: 300px;
+            height: 300px;
+        }
+
+        /* 前面分析过的h1标签的css，text-shadow设置阴影使文字更好看，letter-spacing设置字符间距 */
+        .login h1 {
+            color: #555555;
+            text-shadow: 0px 10px 8px #CDC673;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* 两个输入框的css，border属性设置边框线粗细以及颜色，border-radius设置边框的圆角角度 */
+        input {
+            padding: 10px;
+            width: 100%;
+            color: white;
+            margin-bottom: 10px;
+            background-color: #555555;
+            border: 1px solid black;
+            border-radius: 4px;
+            letter-spacing: 2px;
+        }
+
+        select {
+            padding: 10px;
+            width: 49%;
+            color: white;
+            margin-bottom: 10px;
+            background-color: #555555;
+            border: 1px solid black;
+            border-radius: 4px;
+            letter-spacing: 2px;
+        }
+
+        /* 登录按钮的css，cursor:pointer当鼠标移到按钮上面时变成小手形状 */
+        form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #CDC673;
+            border: 1px solid black;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button
+        {
+            width: 100%;
+            padding: 10px;
+            background-color: #CDC673;
+            border: 1px solid black;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table
+         {
+             width: 100%;
+             padding: 10px;
+             background-color: #ffffff;
+             border: 1px solid black;
+             border-radius: 4px;
+         }
+    </style>
+    <script src="jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                url:"/queryMenu",
+                type:"post",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    for (var i=0;i<menu.length;i++){
+                        $("#chooseFood1").append("<option>" + menu[i].food + "</option>");
+                        $("#chooseFood2").append("<option>" + menu[i].food + "</option>");
+                        $("#chooseFood3").append("<option>" + menu[i].food + "</option>");
+                        $("#chooseFood4").append("<option>" + menu[i].food + "</option>")
+                    }
+                }
+            })
+        });
+        function queryMenu() {
+            $.ajax({
+                url:"/queryMenu",
+                type:"post",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    $("#menu").empty();
+                    for (var i=0;i<menu.length;i++){
+                        $("#menu").append(
+                            "<tr><td>"+menu[i].id+"</td>" +
+                            "<td>"+menu[i].food+"</td>" +
+                            "<td>"+menu[i].price+"</td></tr>")
+                    }
+                }
+            })
+        }
+        function queryBookMenu() {
+            $.ajax({
+                url:"/queryBookMenu",
+                type:"post",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    $("#bookMenu").empty();
+                    for (var i=0;i<menu.length;i++){
+                        $("#bookMenu").append(
+                            "<tr><td>"+menu[i].staffid+"</td>" +
+                            "<td>"+menu[i].menu+"</td>" +
+                            "<td>"+menu[i].price+"</td>" +
+                            "<td>"+menu[i].bookdate+"</td></tr>")
+                    }
+                }
+            })
+        }
+        function querySuggestion() {
+            $.ajax({
+                url:"/querySuggestion",
+                type:"post",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    $("#suggestionMenu").empty();
+                    for (var i=0;i<menu.length;i++){
+                        $("#suggestionMenu").append(
+                            "<tr><td>"+menu[i].staffid+"</td>" +
+                            "<td>"+menu[i].suggestion+"</td>" +
+                            "<td>"+menu[i].date+"</td></tr>")
+                    }
+                }
+            })
+        }
+        function submitMenu() {
+            var menu={
+                food:$("#food").val(),
+                price:$("#price").val()
+            };
+            $.ajax({
+                url:"/addMenu",
+                type:"post",
+                data:JSON.stringify(menu),
+                contentType:"application/json;charset=utf-8",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    alert(menu)
+                }
+            })
+        }
+        function submitTodayMenu() {
+            var todayMenu={
+                food1:$("#chooseFood1").val(),
+                food2:$("#chooseFood2").val(),
+                food3:$("#chooseFood3").val(),
+                food4:$("#chooseFood4").val()
+            };
+            $.ajax({
+                url:"/makeMenu",
+                type:"post",
+                data:JSON.stringify(todayMenu),
+                contentType:"application/json;charset=utf-8",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    alert(menu)
+                }
+            })
+        }
+        function setBookDate() {
+            var time=$("#bookDate").val();
+            $.ajax({
+                url:"/setBookTime",
+                type:"post",
+                data:JSON.stringify(time),
+                contentType:"application/json;charset=utf-8",
+                success:function (data) {
+                    var menu=JSON.parse(data);
+                    alert(menu)
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div class="headtop"></div>
+<div class="login">
+    <h1>管理界面</h1>
+    <input type="text" style="width: 49%;" id="food" placeholder="菜名">
+    <input type="text" style="width: 49%;" id="price" placeholder="价格">
+    <button onclick="submitMenu()">添加新菜</button>
+    <select id="chooseFood1"></select>
+    <select id="chooseFood2"></select>
+    <select id="chooseFood3"></select>
+    <select id="chooseFood4"></select>
+    <button onclick="submitTodayMenu()">提交今日菜谱</button>
+    <button type="button" onclick="queryMenu()">显示所有菜名</button>
+    <div><table border="1">
+        <tr>
+            <th>编号</th>
+            <th>菜名</th>
+            <th>价格</th>
+        </tr>
+    </table>
+        <table id="menu" border="1">
+        </table>
+    </div>
+</div>
+<div class="login" style="left: 50%">
+    <h1>查询订餐情况</h1>
+    <form action="/downloadSpendXLS" method="post">
+        <button type="submit">下载</button>
+    </form>
+    <select id="bookDate">
+        <option value="0">可以提前0天预订</option>
+        <option value="1">可以提前1天预订</option>
+        <option value="2">可以提前2天预订</option>
+        <option value="3">可以提前3天预订</option>
+    </select>
+    <button style="width: 49%" type="button" onclick="setBookDate()">设置</button>
+    <button type="button" onclick="queryBookMenu()">显示订餐情况</button>
+    <div><table border="1">
+        <tr>
+            <th>员工号</th>
+            <th>菜名</th>
+            <th>指定的时间</th>
+        </tr>
+    </table>
+        <table id="bookMenu" border="1">
+        </table>
+    </div>
+</div>
+<div class="login" style="left: 70%">
+    <h1>员工建议</h1>
+
+    <button type="button" onclick="querySuggestion()">显示员工建议</button>
+    <div><table border="1">
+        <tr>
+            <th>员工号</th>
+            <th>建议</th>
+            <th>提交时间</th>
+        </tr>
+    </table>
+        <table id="suggestionMenu" border="1">
+        </table>
+    </div>
+</div>
+</body>
+</html>
